@@ -1,9 +1,9 @@
 <?php
 
-$bytwos = 100;
+$bytwos = 2;
 
 do {
+	$bytwos*=$bytwos;
 	echo "$bytwos" . PHP_EOL;
-	$bytwos-=5;
 	
-} while ($bytwos >= -10);
+} while ($bytwos < 1000000);
