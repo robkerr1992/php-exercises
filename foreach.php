@@ -11,6 +11,9 @@ foreach ($things as $key => $value) {
 		echo "$value is a boolean" . PHP_EOL;
 	}
 	elseif(is_array($value)) {
+		foreach ($value as $index => $number) {
+			echo "$index is the index, $number is the value" . PHP_EOL;
+		}
 		echo "$value is an array" . PHP_EOL;
 	}
 	elseif(is_null($value)) {
@@ -18,5 +21,8 @@ foreach ($things as $key => $value) {
 	}
 	elseif(is_string($value)) {
 		echo "$value is a string" . PHP_EOL;
+	}
+	else {
+		echo "idk bro" . PHP_EOL;
 	}
 }
