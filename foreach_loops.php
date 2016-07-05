@@ -1,3 +1,6 @@
+<?php
+
+
 $books = array(
     'The Hobbit' => array(
         'published' => 1937,
@@ -20,3 +23,12 @@ $books = array(
         'pages' => 544
     )
 );
+
+
+foreach ($books as $book => $detail) {
+    if ($detail['published'] > 1950) {
+
+    echo "$book was published in {$detail['published']}, was written by {$detail['author']} and had {$detail['pages']} pages." . PHP_EOL;
+    # code...
+    };
+};
