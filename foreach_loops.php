@@ -25,10 +25,10 @@ $books = array(
 );
 
 
-foreach ($books as $book => $detail) {
+foreach ($books as $book => $details) {
     if ($detail['published'] > 1950) {
 
-    echo "$book was published in {$detail['published']}, was written by {$detail['author']} and had {$detail['pages']} pages." . PHP_EOL;
+    echo "$book was published in {$details['published']}, was written by {$details['author']} and had {$details['pages']} pages." . PHP_EOL;
     # code...
     };
 };
