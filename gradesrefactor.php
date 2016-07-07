@@ -23,6 +23,7 @@ function average($array)
 $students = [];
 
 $i = 0;
+echo "Hello, we're going to calculate your total grade average.\n";
 do
 {
     $subjects = [];
@@ -39,22 +40,23 @@ do
         $students[$name] = $subjects;
 
 
-    } while (prompt('Moar subjects Y or N? ') != 'N');
+    } while (prompt("Moar subjects Y or N? ") != 'N' && 'n');
 
-} while (prompt('Another Student Y or N? ') != 'N');
+} while (prompt("Another student Y or N? ") != 'N' && 'n');
 
 //print_r($students);
 
-
+echo "======\n======\n======\n======\n";
 foreach($students as $student => $subjects)
 {
     $total = average($subjects);
+    echo "This is what $student got:\n";
 
     foreach($subjects as $subject => $grade)
     {
-        echo "$student got a $grade in $subject" . PHP_EOL;
+        echo "$grade in $subject\n";
     }
-    echo "$student averaged a $total" . PHP_EOL;
+    echo "$student has an average of $total\n";
 };
 
 
