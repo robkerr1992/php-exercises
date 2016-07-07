@@ -1,5 +1,4 @@
 <?php
-
 function alphabetSoup($string) {
     $i=0;
     $wordArray = explode(" ", $string);
@@ -13,17 +12,9 @@ function alphabetSoup($string) {
             break;
         };
         echo $word . " ";
-
-
-
     };
-
 };
-
 alphabetSoup("i'm a mountain bike lol");
-
-
-
 /**
  * Created by PhpStorm.
  * User: MacBookPro
