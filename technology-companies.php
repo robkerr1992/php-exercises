@@ -49,10 +49,15 @@ $companies = [
 //ksort($companies);
 
 
-foreach($companies as &$company){
-    asort($company);
+//foreach($companies as &$company){
+//    asort($company);
+//
+//}
 
-}
+
+uasort($companies, function($a, $b) {
+    return count($b) - count($a);
+});
 print_r($companies);
 
 
