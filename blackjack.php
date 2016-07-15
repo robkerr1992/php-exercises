@@ -15,8 +15,9 @@ function buildDeck($suits, $cards) {
             array_push($deck, "$card $suit");
         }
     }
-    return shuffle($deck);
-}
+    shuffle($deck);
+    return $deck;
+};
 // determine if a card is an ace
 // return true for ace, false for anything else
 function cardIsAce($card) {
@@ -26,18 +27,18 @@ function cardIsAce($card) {
     else {
         return false;
     }
-}
+};
 // determine the value of an individual card (string)
 // aces are worth 11
 // face cards are worth 10
 // numeric cards are worth their value
 function getCardValue($card) {
-    list($value, $suit) = explode(' ', $card);
-    if ($value == "A") {
+    if (cardIsAce($card)) {
         return 11;
-    } elseif ($value == "K" || $value == "Q" || $value == "J") {
+    } elseif (strpos($card, 'K') !== false || strpos($card, 'Q') !== false || strpos($card, 'J') !== false || strpos($card, '10') !== false) {
         return 10;
     } else {
+        list($value, $suit) = explode(' ',$card);
         return intval($value);
     };
 
@@ -60,7 +61,7 @@ function getHandTotal($hand) {
 // pass by reference (both hand and deck passed in are modified)
 function drawCard(&$hand, &$deck) {
     array_push($hand, array_shift($deck));
-}
+};
 // print out a hand of cards
 // name is the name of the player
 // hidden is to initially show only first card of hand (for dealer)
@@ -69,24 +70,55 @@ function drawCard(&$hand, &$deck) {
 // or:
 // Player: [J D] [2 D] Total: 12
 function echoHand($hand, $name, $hidden = false) {
-    fwrite(STDOUT, "$name: ")
-}
+    if ($hidden){
+        fwrite(STDOUT, "$name: ");
+        fwrite(STDOUT, "[$hand[0]] [???] ");
+        fwrite(STDOUT, "Total: ???\n");
+    } else {
+        fwrite(STDOUT, "$name: ");
+        foreach ($hand as $card) {
+            fwrite(STDOUT, "[$card] ");
+        }
+        fwrite(STDOUT, 'Total:' . getHandTotal($hand) . "\n");
+    };
+};
 // build the deck of cards
 $deck = buildDeck($suits, $cards);
+var_dump($deck);
 // initialize a dealer and player hand
 $dealer = [];
 $player = [];
 // dealer and player each draw two cards
-// todo
+drawCard($dealer, $deck);
+drawCard($dealer, $deck);
+drawCard($player, $deck);
+drawCard($player, $deck);
+//var_dump($player);
+//var_dump($dealer);
 // echo the dealer hand, only showing the first card
-// todo
+echoHand($dealer,'Dealer', $hidden = true);
 // echo the player hand
-// todo
-// allow player to "(H)it or (S)tay?" till they bust (exceed 21) or stay
-while () {
-    // todo
+echoHand($player,'Rob');
+$playerTotal = getHandTotal($player);
+$userInput = "";
+//// allow player to "(H)it or (S)tay?" till they bust (exceed 21) or stay
+while ($playerTotal <= 21 || ($userInput == 'S' && $userInput == 's')) {
+    fwrite(STDOUT, '(H)it or (S)tay?');
+    $userInput = trim(fgets(STDIN));
+    if ($userInput == 'H' || 'h') {
+        drawCard($player, $deck);
+        echoHand($player, 'Rob');
+    }
 }
-// show the dealer's hand (all cards)
+//// show the dealer's hand (all cards)
+//
+//
+if ($playerTotal == 21) {
+    fwrite(STDOUT, 'Winner Winner Chicken Dinner!!!!!');
+} elseif ($playerTotal > 21) {
+    fwrite(STDOUT, 'His name was Busto Douglas.');
+};
+echoHand($dealer,'Dealer');
 // todo
 // todo (all comments below)
 // at this point, if the player has more than 21, tell them they busted
