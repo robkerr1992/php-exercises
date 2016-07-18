@@ -82,30 +82,7 @@ function echoHand($hand, $name, $hidden = false) {
 };
 
 function insurance($hand) {
-    fwrite(STDOUT, 'Would you like to buy insurance (Y)es or (N)o? ');
-    $insurance = strtolower(trim(fgets(STDIN)));
-    $dealerTotal = getHandTotal($hand);
-    if ($insurance == 'y') {
-        fwrite(STDOUT, "Insurance has been purchased.\n");
-        if ($dealerTotal == 21) {
-            fwrite(STDOUT, "Dealer has 21. Good purchase.\n");
-            return false;
 
-        } else {
-            fwrite(STDOUT, "No Blackjack.\n");
-            return true;
-        };
-    } else {
-        fwrite(STDOUT, "Insurance has NOT been purchased.\n");
-        if ($dealerTotal == 21) {
-            fwrite(STDOUT, "Dealer has 21.\n");
-            return false;
-
-        } else {
-            fwrite(STDOUT, "No Blackjack.\n");
-            return true;
-        };
-    };
 
 };
 
@@ -142,16 +119,39 @@ do {
     $continue = true;
     //// ask if they want insurance///////////
     if (cardIsAce($dealer[0])) {
-       $continue = insurance($dealer);
+        fwrite(STDOUT, 'Would you like to buy insurance (Y)es or (N)o? ');
+        $insurance = strtolower(trim(fgets(STDIN)));
+        $dealerTotal = getHandTotal($dealer);
+        if ($insurance == 'y') {
+            fwrite(STDOUT, "Insurance has been purchased.\n");
+            if ($dealerTotal == 21) {
+                fwrite(STDOUT, "Dealer has 21. Good purchase.\n");
+                $continue = false;
+
+            } else {
+                fwrite(STDOUT, "No Blackjack.\n");
+            };
+        } else {
+            fwrite(STDOUT, "Insurance has NOT been purchased.\n");
+            if ($dealerTotal == 21) {
+                fwrite(STDOUT, "Dealer has 21.\n");
+                $continue = false;
+
+            } else {
+                fwrite(STDOUT, "No Blackjack.\n");
+            };
+        };
     };
     //// allow player to "(H)it or (S)tay?" till they bust (exceed 21) or stay
     while (($userInput != 's' && $playerTotal < 21) && ($continue == true)) {
         $playerTotal = getHandTotal($player);
         if ($playerTotal == 21) {
             fwrite(STDOUT, "Winner Winner Chicken Dinner!!\n");
+            $playerChips += $playerBet;
             break;
         } elseif ($playerTotal > 21) {
             fwrite(STDOUT, "His Name was Busto Douglas.\n");
+            $playerChips -= $playerBet;
             break;
         };
         fwrite(STDOUT, '(H)it or (S)tay? ');
@@ -173,12 +173,15 @@ do {
         };
         if ($dealerTotal > 21) {
             fwrite(STDOUT, "Dealer has Busted. Such Cards, Many Wins.\n");
+            $playerChips += $playerBet;
         } elseif ($dealerTotal < $playerTotal) {
             fwrite(STDOUT, "Winner! Winner! Fair and Square.\n");
+            $playerChips += $playerBet;
         } elseif ($dealerTotal == $playerTotal) {
             fwrite(STDOUT, "Push! Try Again.\n");
         } else {
             fwrite(STDOUT, "Dealer Wins!\n");
+            $playerChips -= $playerBet;
         }
     };
 } while ($playerChips > 0);
