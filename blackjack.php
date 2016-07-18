@@ -80,63 +80,108 @@ function echoHand($hand, $name, $hidden = false) {
         fwrite(STDOUT, 'Total:' . getHandTotal($hand) . "\n");
     };
 };
-// build the deck of cards
-$deck = buildDeck($suits, $cards);
-//var_dump($deck);
-// initialize a dealer and player hand
-$dealer = [];
-$player = [];
-// dealer and player each draw two cards
-drawCard($dealer, $deck);
-drawCard($dealer, $deck);
-drawCard($player, $deck);
-drawCard($player, $deck);
-//var_dump($player);
-//var_dump($dealer);
-// echo the dealer hand, only showing the first card
-echoHand($dealer,'Dealer', true);
-// echo the player hand
-echoHand($player,'Rob');
-$playerTotal = getHandTotal($player);
-$dealerTotal = getHandTotal($dealer);
-$userInput = "";
-//// allow player to "(H)it or (S)tay?" till they bust (exceed 21) or stay
-while ($userInput != 's' && $playerTotal < 21) {
-    $playerTotal = getHandTotal($player);
-    if ($playerTotal == 21) {
-        fwrite(STDOUT, "Winner Winner Chicken Dinner!!\n");
-        break;
-    } elseif ($playerTotal > 21) {
-        fwrite(STDOUT, "His Name was Busto Douglas.\n");
-        break;
-    };
-    fwrite(STDOUT, '(H)it or (S)tay?');
-    $userInput = trim(strtolower(fgets(STDIN)));
-    if ($userInput == 'h') {
-        drawCard($player, $deck);
-        echoHand($player, 'Rob');
+
+function insurance($hand) {
+    fwrite(STDOUT, 'Would you like to buy insurance (Y)es or (N)o? ');
+    $insurance = strtolower(trim(fgets(STDIN)));
+    $dealerTotal = getHandTotal($hand);
+    if ($insurance == 'y') {
+        fwrite(STDOUT, "Insurance has been purchased.\n");
+        if ($dealerTotal == 21) {
+            fwrite(STDOUT, "Dealer has 21. Good purchase.\n");
+            return false;
+
+        } else {
+            fwrite(STDOUT, "No Blackjack.\n");
+            return true;
+        };
+    } else {
+        fwrite(STDOUT, "Insurance has NOT been purchased.\n");
+        if ($dealerTotal == 21) {
+            fwrite(STDOUT, "Dealer has 21.\n");
+            return false;
+
+        } else {
+            fwrite(STDOUT, "No Blackjack.\n");
+            return true;
+        };
     };
 
 };
-$playerTotal = getHandTotal($player);
-echoHand($dealer,'Dealer');
-//// show the dealer's hand (all cards)
-if ($playerTotal < 21) {
-    while ($dealerTotal < 17) {
-        drawCard($dealer, $deck);
-        echoHand($dealer, 'Dealer');
-        $dealerTotal = getHandTotal($dealer);
+
+$playerChips = 1000;
+do {
+
+
+    // build the deck of cards
+    //$deck = ["A H","4 S","K H","7 H","3 S","3 H"];
+    $deck = buildDeck($suits, $cards);
+    //var_dump($deck);
+
+    // initialize a dealer and player hand
+    $dealer = [];
+    $player = [];
+    // dealer and player each draw two cards
+    fwrite(STDOUT, "You have $playerChips chips.\n");
+    fwrite(STDOUT, 'How much would you like to bet? ');
+    $playerBet = intval(trim(fgets(STDIN)));
+    fwrite(STDOUT, "Player has bet $playerBet\n");
+    drawCard($dealer, $deck);
+    drawCard($dealer, $deck);
+    drawCard($player, $deck);
+    drawCard($player, $deck);
+    //var_dump($player);
+    //var_dump($dealer);
+    // echo the dealer hand, only showing the first card
+    echoHand($dealer,'Dealer', true);
+    // echo the player hand
+    echoHand($player,'Rob');
+    $playerTotal = getHandTotal($player);
+    $dealerTotal = getHandTotal($dealer);
+    $userInput = "";
+    $continue = true;
+    //// ask if they want insurance///////////
+    if (cardIsAce($dealer[0])) {
+       $continue = insurance($dealer);
     };
-    if ($dealerTotal > 21) {
-        fwrite(STDOUT, "Dealer has Busted. Such Cards, Many Wins.\n");
-    } elseif ($dealerTotal < $playerTotal) {
-        fwrite(STDOUT, "Winner! Winner! Fair and Square.\n");
-    } elseif ($dealerTotal == $playerTotal) {
-        fwrite(STDOUT, "Push: Try Harder, Bruh.\n");
-    } else {
-        fwrite(STDOUT, "Dealer Wins! Sucker!!!!\n");
-    }
-};
+    //// allow player to "(H)it or (S)tay?" till they bust (exceed 21) or stay
+    while (($userInput != 's' && $playerTotal < 21) && ($continue == true)) {
+        $playerTotal = getHandTotal($player);
+        if ($playerTotal == 21) {
+            fwrite(STDOUT, "Winner Winner Chicken Dinner!!\n");
+            break;
+        } elseif ($playerTotal > 21) {
+            fwrite(STDOUT, "His Name was Busto Douglas.\n");
+            break;
+        };
+        fwrite(STDOUT, '(H)it or (S)tay? ');
+        $userInput = trim(strtolower(fgets(STDIN)));
+        if ($userInput == 'h') {
+            drawCard($player, $deck);
+            echoHand($player, 'Rob');
+        };
+
+    };
+    $playerTotal = getHandTotal($player);
+    echoHand($dealer,'Dealer');
+    //// show the dealer's hand (all cards)
+    if ($playerTotal < 21) {
+        while ($dealerTotal < 17) {
+            drawCard($dealer, $deck);
+            echoHand($dealer, 'Dealer');
+            $dealerTotal = getHandTotal($dealer);
+        };
+        if ($dealerTotal > 21) {
+            fwrite(STDOUT, "Dealer has Busted. Such Cards, Many Wins.\n");
+        } elseif ($dealerTotal < $playerTotal) {
+            fwrite(STDOUT, "Winner! Winner! Fair and Square.\n");
+        } elseif ($dealerTotal == $playerTotal) {
+            fwrite(STDOUT, "Push! Try Again.\n");
+        } else {
+            fwrite(STDOUT, "Dealer Wins!\n");
+        }
+    };
+} while ($playerChips > 0);
 // todo
 // todo (all comments below)
 // at this point, if the player has more than 21, tell them they busted
