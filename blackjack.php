@@ -1,11 +1,6 @@
 <?php
-// create an array for suits
 $suits = ['C', 'H', 'S', 'D'];
-// create an array for cards
 $cards = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
-// build a deck (array) of cards
-// card values should be "VALUE SUIT". ex: "7 H"
-// make sure to shuffle the deck before returning it
 function buildDeck($suits, $cards)
 {
     $deck = [];
@@ -16,11 +11,8 @@ function buildDeck($suits, $cards)
     }
     shuffle($deck);
     return $deck;
-}
+};
 
-;
-// determine if a card is an ace
-// return true for ace, false for anything else
 function cardIsAce($card)
 {
     if (strpos($card, 'A') !== false) {
@@ -28,13 +20,8 @@ function cardIsAce($card)
     } else {
         return false;
     }
-}
+};
 
-;
-// determine the value of an individual card (string)
-// aces are worth 11
-// face cards are worth 10
-// numeric cards are worth their value
 function getCardValue($card)
 {
     if (cardIsAce($card)) {
@@ -46,12 +33,8 @@ function getCardValue($card)
         return intval($value);
     };
 
-}
+};
 
-;
-// get total value for a hand of cards
-// don't forget to factor in aces
-// aces can be 1 or 11 (make them 1 if total value is over 21)
 function getHandTotal($hand)
 {
     $handvalue = 0;
@@ -65,21 +48,13 @@ function getHandTotal($hand)
         };
     };
     return $handvalue;
-}
+};
 
-;
-// draw a card from the deck into a hand
-// pass by reference (both hand and deck passed in are modified)
 function drawCard(&$hand, &$deck)
 {
     array_push($hand, array_shift($deck));
-}
+};
 
-;
-
-// Dealer: [4 C] [???] Total: ???
-// or:
-// Player: [J D] [2 D] Total: 12
 function echoHand($hand, $name, $hidden = false)
 {
     if ($hidden) {
@@ -93,20 +68,18 @@ function echoHand($hand, $name, $hidden = false)
         }
         fwrite(STDOUT, 'Total: ' . getHandTotal($hand) . "\n");
     };
-}
-
-;
+};
 fwrite(STDOUT, 'How many chips would you like? ');
 $playerChips = trim(fgets(STDIN));
 $deck = buildDeck($suits, $cards);
 
 do {
-    // build the deck of cards
+
 //    $deck = ["K H", "A S", "K C", "6 H", "A S", "10 H", "10 D", "10 C"];
     //var_dump($deck);
 
-    // initialize a dealer and player hand
-    $dealer = [];
+
+    $dealer = []; ////////// initialize a dealer and player hand////////////////////////////////
     $player = [];
     $playerSplit = [];
     // dealer and player each draw two cards
@@ -118,11 +91,7 @@ do {
     drawCard($dealer, $deck);
     drawCard($player, $deck);
     drawCard($dealer, $deck);
-    //var_dump($player);
-    //var_dump($dealer);
-    // echo the dealer hand, only showing the first card
     echoHand($dealer, 'Dealer', true);
-    // echo the player hand
     echoHand($player, 'Rob');
     $playerTotal = getHandTotal($player);
     $dealerTotal = getHandTotal($dealer);
@@ -130,11 +99,11 @@ do {
     $continue = true;
     $doubleDown = false;
 
-    if ($playerTotal == 21) {     ///////////// checks if player has blackjack
+    if ($playerTotal == 21) {     ///////////// checks if player has blackjack //////////////////////
         fwrite(STDOUT, "Blackjack!!!!\n");
         $playerChips += ($playerBet * 1.5);
         $continue = false;
-    } elseif (cardIsAce($dealer[0])) {   //// ask if they want insurance///////////
+    } elseif (cardIsAce($dealer[0])) {   ///////////////////// asks if they want insurance///////////
         fwrite(STDOUT, 'Would you like to buy insurance (Y)es or (N)o? ');
         $userInput = strtolower(trim(fgets(STDIN)));
         $dealerTotal = getHandTotal($dealer);
@@ -164,7 +133,7 @@ do {
 
     $userInput = '';
 
-    if ($playerTotal == 10 || $playerTotal == 11) {    /////////// double down script /////////////////
+    if ($playerTotal == 10 || $playerTotal == 11) {    /////////// double down script ///////////////////////////////////
         fwrite(STDOUT, 'Would you like to double down? This will double your bet. (Y)es or (N)o? ');
         $userInput = strtolower(trim(fgets(STDIN)));
         if ($userInput == 'y') {
@@ -178,8 +147,7 @@ do {
     };
 
 
-    /////////////checks and asks if player whats to split
-    if (substr($player[0], 0, 2) == substr($player[1], 0, 2)) {
+    if (substr($player[0], 0, 2) == substr($player[1], 0, 2)) {   /////////////checks and asks if player whats to split
         fwrite(STDOUT, "Would you like to split your " . trim(substr($player[0], 0, 2)) . "'s (Y)es or (N)o? ");
         $userInput = strtolower(trim(fgets(STDIN)));
         if ($userInput == 'y') {
@@ -221,7 +189,7 @@ do {
     };
 
 
-    //// allow player to "(H)it or (S)tay?" till they bust (exceed 21) or stay
+    //// allow player to "(H)it or (S)tay?" till they bust (exceed 21) or stay///////////////
     $userInput = "";
 
     while (($userInput != 's' && $playerTotal < 21) && $continue) {
@@ -251,8 +219,7 @@ do {
     $dealerHandString = implode('&', $dealer);
 
 
-    //// show the dealer's hand (all cards)
-    if ($playerTotal < 21 || ($doubleDown && $playerTotal < 21)) {
+    if ($playerTotal < 21 || ($doubleDown && $playerTotal < 21)) { /////////////////////dealer hits until hard 17/////////
         while ($dealerTotal < 17 || (($dealerTotal <= 17) && (substr_count($dealerHandString, 'A') > 0))) {
             drawCard($dealer, $deck);
             echoHand($dealer, 'Dealer');
@@ -260,7 +227,7 @@ do {
         };
         fwrite(STDOUT, "Player: $playerTotal.\n");
         fwrite(STDOUT, "Dealer: $dealerTotal.\n");
-        if ($dealerTotal > 21) {
+        if ($dealerTotal > 21) {                               //////////////////results///////////////////////////
             fwrite(STDOUT, "Dealer has busted. Such chips, many wins.\n");
             $playerChips += $playerBet;
         } elseif ($dealerTotal < $playerTotal) {
@@ -282,7 +249,7 @@ do {
         $playerChips += $playerBet;
     };
 
-    if ($playerSplit != [] && $splitTotal < 21) {
+    if ($playerSplit != [] && $splitTotal < 21) { ////////////////////results if player split////////////////////////
         fwrite(STDOUT, "Split: $splitTotal");
         fwrite(STDOUT, "Dealer: $dealerTotal.\n");
         if ($dealerTotal > 21) {
