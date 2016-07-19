@@ -96,18 +96,19 @@ function echoHand($hand, $name, $hidden = false)
 }
 
 ;
-
-$playerChips = 1000;
+fwrite(STDOUT, 'How many chips would you like? ');
+$playerChips = trim(fgets(STDIN));
 $deck = buildDeck($suits, $cards);
 
 do {
     // build the deck of cards
-//    $deck = ["A H","A S","10 H","6 H","10 S","10 H","10 H","10 H"];
+//    $deck = ["K H", "A S", "K C", "6 H", "A S", "10 H", "10 D", "10 C"];
     //var_dump($deck);
 
     // initialize a dealer and player hand
     $dealer = [];
     $player = [];
+    $playerSplit = [];
     // dealer and player each draw two cards
     fwrite(STDOUT, "You have $playerChips chips.\n");
     fwrite(STDOUT, 'How much would you like to bet? ');
@@ -126,20 +127,21 @@ do {
     $playerTotal = getHandTotal($player);
     $dealerTotal = getHandTotal($dealer);
     $userInput = "";
-    $playerHandString =
     $continue = true;
+    $doubleDown = false;
 
     if ($playerTotal == 21) {     ///////////// checks if player has blackjack
-        fwrite(STDOUT, 'Blackjack!!!!');
+        fwrite(STDOUT, "Blackjack!!!!\n");
         $playerChips += ($playerBet * 1.5);
         $continue = false;
     } elseif (cardIsAce($dealer[0])) {   //// ask if they want insurance///////////
         fwrite(STDOUT, 'Would you like to buy insurance (Y)es or (N)o? ');
-        $insurance = strtolower(trim(fgets(STDIN)));
+        $userInput = strtolower(trim(fgets(STDIN)));
         $dealerTotal = getHandTotal($dealer);
-        if ($insurance == 'y') {
+        if ($userInput == 'y') {
             fwrite(STDOUT, "Insurance has been purchased.\n");
             $playerChips -= ($playerBet / 2);
+            fwrite(STDOUT, "Player has $playerChips chips.\n");
             if ($dealerTotal == 21) {
                 fwrite(STDOUT, "Dealer has 21. You are wise like wizard.\n");
                 $continue = false;
@@ -160,18 +162,68 @@ do {
         };
     };
 
+    $userInput = '';
 
-
-
-    if (getCardValue($player[0]) == getCardValue($player[1])) {
-        if () {
-
-        };
-        fwrite(STDOUT, "Would you like to split?")
+    if ($playerTotal == 10 || $playerTotal == 11) {    /////////// double down script /////////////////
+        fwrite(STDOUT, 'Would you like to double down? This will double your bet. (Y)es or (N)o? ');
+        $userInput = strtolower(trim(fgets(STDIN)));
+        if ($userInput == 'y') {
+            $playerBet += $playerBet;
+            drawCard($player, $deck);
+            $continue = false;
+            $doubleDown = true;
+            echoHand($player, 'Player');
+        }
 
     };
 
+
+    /////////////checks and asks if player whats to split
+    if (substr($player[0], 0, 2) == substr($player[1], 0, 2)) {
+        fwrite(STDOUT, "Would you like to split your " . trim(substr($player[0], 0, 2)) . "'s (Y)es or (N)o? ");
+        $userInput = strtolower(trim(fgets(STDIN)));
+        if ($userInput == 'y') {
+            array_push($playerSplit, array_pop($player));
+            fwrite(STDOUT, "Action Chuck Lineberry!! First hand, Moneybags:\n");
+
+            echoHand($playerSplit, 'Player');
+            $splitTotal = getHandTotal($playerSplit);
+            while ($userInput != 's' && $splitTotal < 21) {
+                $splitTotal = getHandTotal($playerSplit);
+                if ($splitTotal == 21) {
+                    fwrite(STDOUT, "21!!!\n");
+                    break;
+                } elseif ($splitTotal > 21) {
+                    fwrite(STDOUT, "Player has $splitTotal.\n");
+                    fwrite(STDOUT, "What's up, Busto Douglas.\n");
+                    $playerChips -= $playerBet;
+                    fwrite(STDOUT, "Player has $playerChips chips.\n");
+                    break;
+                };
+
+                fwrite(STDOUT, '(H)it or (S)tay? ');
+                $userInput = trim(strtolower(fgets(STDIN)));
+
+                if ($userInput == 'h') {
+                    drawCard($playerSplit, $deck);
+                    echoHand($playerSplit, 'Player');
+                };
+
+
+            };
+
+        } else {
+            fwrite(STDOUT, "Whatever, Nit.\n");
+        };
+
+        fwrite(STDOUT, "Heads up, Cowboy:\n");
+        echoHand($player, 'Player');
+    };
+
+
     //// allow player to "(H)it or (S)tay?" till they bust (exceed 21) or stay
+    $userInput = "";
+
     while (($userInput != 's' && $playerTotal < 21) && $continue) {
         $playerTotal = getHandTotal($player);
         if ($playerTotal == 21) {
@@ -180,23 +232,27 @@ do {
         } elseif ($playerTotal > 21) {
             fwrite(STDOUT, "Player has $playerTotal.\n");
             fwrite(STDOUT, "What's up, Busto Douglas.\n");
-            fwrite(STDOUT, "Waxahachied. He split your wig, Son.\n");
             $playerChips -= $playerBet;
             break;
         };
+
         fwrite(STDOUT, '(H)it or (S)tay? ');
         $userInput = trim(strtolower(fgets(STDIN)));
+
         if ($userInput == 'h') {
             drawCard($player, $deck);
-            echoHand($player, 'Rob');
+            echoHand($player, 'Player');
         };
 
     };
+
     $playerTotal = getHandTotal($player);
     echoHand($dealer, 'Dealer');
     $dealerHandString = implode('&', $dealer);
+
+
     //// show the dealer's hand (all cards)
-    if ($playerTotal < 21) {
+    if ($playerTotal < 21 || ($doubleDown && $playerTotal < 21)) {
         while ($dealerTotal < 17 || (($dealerTotal <= 17) && (substr_count($dealerHandString, 'A') > 0))) {
             drawCard($dealer, $deck);
             echoHand($dealer, 'Dealer');
@@ -205,22 +261,49 @@ do {
         fwrite(STDOUT, "Player: $playerTotal.\n");
         fwrite(STDOUT, "Dealer: $dealerTotal.\n");
         if ($dealerTotal > 21) {
-            fwrite(STDOUT, "Dealer has busted. Such cards, many wins.\n");
+            fwrite(STDOUT, "Dealer has busted. Such chips, many wins.\n");
             $playerChips += $playerBet;
         } elseif ($dealerTotal < $playerTotal) {
-            fwrite(STDOUT, "Player wins!\n");
+            fwrite(STDOUT, "Player triumphs!\n");
             $playerChips += $playerBet;
         } elseif ($dealerTotal == $playerTotal) {
             fwrite(STDOUT, "Push! Try again.\n");
-        } elseif ($dealerTotal > $playerTotal && $continue == true) {
-            fwrite(STDOUT, "Dealer wins!\n");
+        } elseif ($dealerTotal > $playerTotal && $continue) {
+            fwrite(STDOUT, "Waxahachied.\n");
+            fwrite(STDOUT, "He split your wig, Son.\n");
+            fwrite(STDOUT, "Dealer is victorious. Womp womp.\n");
             $playerChips -= $playerBet;
         };
 
-    } elseif ($playerTotal == 21) {
+    } elseif ($playerTotal == 21 || ($playerTotal == 21 && $doubleDown)) {
         fwrite(STDOUT, "Player: $playerTotal.\n");
         fwrite(STDOUT, "Dealer: $dealerTotal.\n");
         fwrite(STDOUT, "Winner, winner chicken dinner!!\n");
+        $playerChips += $playerBet;
+    };
+
+    if ($playerSplit != [] && $splitTotal < 21) {
+        fwrite(STDOUT, "Split: $splitTotal");
+        fwrite(STDOUT, "Dealer: $dealerTotal.\n");
+        if ($dealerTotal > 21) {
+            fwrite(STDOUT, "Dealer has busted. Such chips. Many wins.\n");
+            $playerChips += $playerBet;
+        } elseif ($dealerTotal < $splitTotal) {
+            fwrite(STDOUT, "Player triumphs!\n");
+            $playerChips += $playerBet;
+        } elseif ($dealerTotal == $splitTotal) {
+            fwrite(STDOUT, "Push! Try again.\n");
+        } elseif ($dealerTotal > $splitTotal) {
+            fwrite(STDOUT, "Waxahachied.\n");
+            fwrite(STDOUT, "He split your wig, Son.\n");
+            fwrite(STDOUT, "Dealer is victorious. Womp womp.\n");
+            $playerChips -= $playerBet;
+        };
+
+    } elseif ($playerSplit != [] && $splitTotal == 21) {
+        fwrite(STDOUT, "Split: $splitTotal.\n");
+        fwrite(STDOUT, "Dealer: $dealerTotal.\n");
+        fwrite(STDOUT, "21, Player. Operation Split is a success.\n");
         $playerChips += $playerBet;
     };
 
