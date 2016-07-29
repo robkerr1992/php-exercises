@@ -96,9 +96,11 @@ WHERE hire_date IN(
 
 SELECT title
 FROM titles t
-  JOIN employees e ON e.emp_no = t.emp_no
-WHERE first_name = 'Aamod' AND to_date LIKE '9999%';
-
+WHERE emp_no IN(
+  SELECT emp_no
+  FROM employees
+  WHERE first_name = 'Aamod'
+);
 
 SELECT CONCAT(first_name, ' ', last_name) as 'Female Manager'
 FROM employees e
