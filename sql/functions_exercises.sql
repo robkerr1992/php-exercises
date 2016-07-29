@@ -90,13 +90,24 @@ SELECT CONCAT(first_name, ' ', last_name) as 'name'
 FROM employees
 WHERE hire_date IN(
     SELECT hire_date
-    FROM employees WHERE emp_no = '101010'
+    FROM employees
+    WHERE emp_no = '101010'
 );
 
 SELECT title
 FROM titles t
   JOIN employees e ON e.emp_no = t.emp_no
 WHERE first_name = 'Aamod' AND to_date LIKE '9999%';
+
+
+SELECT CONCAT(first_name, ' ', last_name) as 'Female Manager'
+FROM employees e
+  JOIN dept_manager dm ON dm.emp_no = e.emp_no
+WHERE e.emp_no IN(
+    SELECT emp_no
+    FROM dept_manager
+    WHERE to_date LIKE '9999%' AND e.gender = 'F'
+);
 
 
 
