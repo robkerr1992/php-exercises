@@ -104,12 +104,49 @@ WHERE emp_no IN(
 
 SELECT CONCAT(first_name, ' ', last_name) as 'Female Manager'
 FROM employees e
-  JOIN dept_manager dm ON dm.emp_no = e.emp_no
 WHERE e.emp_no IN(
     SELECT emp_no
     FROM dept_manager
     WHERE to_date LIKE '9999%' AND e.gender = 'F'
 );
+
+
+SELECT d.dept_name AS 'Department'
+FROM departments d
+	JOIN dept_manager dm ON d.dept_no = dm.dept_no
+WHERE emp_no IN(
+    SELECT emp_no
+    FROM employees e
+    WHERE to_date LIKE '9999%' AND e.gender = 'F'
+);
+
+SELECT
+--------bonus historic
+  (SELECT AVG(salary)
+  FROM salaries s
+    JOIN employees e ON e.emp_no = s.emp_no
+  WHERE e.gender = 'F') as 'Female Avg',
+
+
+  (SELECT AVG(salary)
+  FROM salaries s
+    JOIN employees e ON e.emp_no = s.emp_no
+  WHERE e.gender = 'M') AS 'Male Avg';
+
+
+
+--------bonus current
+SELECT
+  (SELECT AVG(salary)
+  FROM salaries s
+    JOIN employees e ON e.emp_no = s.emp_no
+  WHERE e.gender = 'F' AND s.to_date LIKE '9999%') as 'Female Avg',
+
+
+  (SELECT AVG(salary)
+  FROM salaries s
+    JOIN employees e ON e.emp_no = s.emp_no
+  WHERE e.gender = 'M' AND s.to_date LIKE '9999%') AS 'Male Avg';
 
 
 
