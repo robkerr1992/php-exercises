@@ -1,7 +1,8 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: MacBookPro
- * Date: 8/4/16
- * Time: 2:26 PM
- */
+
+require_once 'square.php';
+
+$tj = new square(5);
+$tj2 = new rectangle(5, 20);
+echo $tj2->area();
+echo $tj->perimeter();
