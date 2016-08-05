@@ -83,9 +83,15 @@ do {
     $player = [];
     $playerSplit = [];
     // dealer and player each draw two cards
+    do {
+        fwrite(STDOUT, 'How much would you like to bet? ');
+        $playerBet = intval(trim(fgets(STDIN)));
+        if ($playerBet > $playerChips) {
+            fwrite(STDOUT, "Ok, Gator Scott. Hold your horses.");
+        }
+    } while ($playerBet > $playerChips);
+
     fwrite(STDOUT, "You have $playerChips chips.\n");
-    fwrite(STDOUT, 'How much would you like to bet? ');
-    $playerBet = intval(trim(fgets(STDIN)));
     fwrite(STDOUT, "Player has bet $playerBet\n");
     drawCard($player, $deck);
     drawCard($dealer, $deck);
@@ -133,7 +139,7 @@ do {
 
     $userInput = '';
 
-    if ($playerTotal == 10 || $playerTotal == 11) {    /////////// double down script ///////////////////////////////////
+    if (($playerTotal == 9 || $playerTotal == 10 || $playerTotal == 11) && $continue) {    /////////// double down script ///////////////////////////////////
         fwrite(STDOUT, 'Would you like to double down? This will double your bet. (Y)es or (N)o? ');
         $userInput = strtolower(trim(fgets(STDIN)));
         if ($userInput == 'y') {
@@ -152,7 +158,7 @@ do {
         $userInput = strtolower(trim(fgets(STDIN)));
         if ($userInput == 'y') {
             array_push($playerSplit, array_pop($player));
-            fwrite(STDOUT, "Action Chuck Lineberry!! First hand, Moneybags:\n");
+            fwrite(STDOUT, "Holy Action!!! Chuck Lineberry's been giving lessons. First hand, Moneybags:\n");
 
             echoHand($playerSplit, 'Player');
             $splitTotal = getHandTotal($playerSplit);
@@ -235,7 +241,7 @@ do {
             $playerChips += $playerBet;
         } elseif ($dealerTotal == $playerTotal) {
             fwrite(STDOUT, "Push! Try again.\n");
-        } elseif ($dealerTotal > $playerTotal && $continue) {
+        } elseif (($dealerTotal > $playerTotal) && ($continue || $doubleDown)) {
             fwrite(STDOUT, "Waxahachied.\n");
             fwrite(STDOUT, "He split your wig, Son.\n");
             fwrite(STDOUT, "Dealer is victorious. Womp womp.\n");
@@ -250,7 +256,7 @@ do {
     };
 
     if ($playerSplit != [] && $splitTotal < 21) { ////////////////////results if player split////////////////////////
-        fwrite(STDOUT, "Split: $splitTotal");
+        fwrite(STDOUT, "Split: $splitTotal.\n");
         fwrite(STDOUT, "Dealer: $dealerTotal.\n");
         if ($dealerTotal > 21) {
             fwrite(STDOUT, "Dealer has busted. Such chips. Many wins.\n");

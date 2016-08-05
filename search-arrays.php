@@ -14,10 +14,13 @@ function search($searchTerm, $arrayToSearch)
         echo "true\n";
         return true;
     };
+    return false;
 };
 search($query, $names);
 
 $i = 0;
+\
+
 $count = 0;
 foreach($names as $name){
     if (array_search($name, $compare) !== false){

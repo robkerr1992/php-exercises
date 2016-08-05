@@ -149,6 +149,35 @@ SELECT
   WHERE e.gender = 'M' AND s.to_date LIKE '9999%') AS 'Male Avg';
 
 
+---------bonus managers current
+
+SELECT
+  (SELECT AVG(salary)
+  FROM salaries s
+    JOIN employees e ON e.emp_no = s.emp_no
+    JOIN dept_manager dm ON dm.emp_no = e.emp_no
+  WHERE e.gender = 'F' AND dm.to_date LIKE '9999%') as 'Female Avg',
 
 
+  (SELECT AVG(salary)
+  FROM salaries s
+    JOIN employees e ON e.emp_no = s.emp_no
+    JOIN dept_manager dm ON dm.emp_no = e.emp_no
+  WHERE e.gender = 'M' AND dm.to_date LIKE '9999%') AS 'Male Avg';
+
+-------------bonuses manager historic
+
+SELECT
+  (SELECT AVG(salary)
+  FROM salaries s
+    JOIN employees e ON e.emp_no = s.emp_no
+    JOIN dept_manager dm ON dm.emp_no = e.emp_no
+  WHERE e.gender = 'F') as 'Female Avg',
+
+
+  (SELECT AVG(salary)
+  FROM salaries s
+    JOIN employees e ON e.emp_no = s.emp_no
+    JOIN dept_manager dm ON dm.emp_no = e.emp_no
+  WHERE e.gender = 'M') AS 'Male Avg';
 

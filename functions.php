@@ -1,7 +1,29 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: MacBookPro
- * Date: 7/19/16
- * Time: 10:42 AM
- */
+function inputHas($key)
+{
+    if (isset($_REQUEST["$key"])) {
+        return true;
+    } else {
+        return false;
+    };
+
+};
+
+function inputGet($key)
+{
+
+    if (isset($_REQUEST["$key"])) {
+        return $_REQUEST["$key"];
+    } else {
+        return null;
+    };
+
+
+};
+
+function escape($key)
+{
+    htmlspecialchars(strip_tags($key));
+    return $key;
+
+};

@@ -29,6 +29,5 @@ foreach ($books as $book => $details) {
     if ($detail['published'] > 1950) {
 
     echo "$book was published in {$details['published']}, was written by {$details['author']} and had {$details['pages']} pages." . PHP_EOL;
-    # code...
     };
 };

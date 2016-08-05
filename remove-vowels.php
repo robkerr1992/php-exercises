@@ -1,10 +1,29 @@
 <?php
 
-$takeMeVowels = ['a','b','c','d','e','f','g','h' ];
+$takeMeVowels = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'];
 
-foreach($takeMeVowels as $letter){
-    if ($letter == 'a' && 'e' && 'i' && 'o' && 'u' && 'y') {}
-    unset($letter);
+foreach($takeMeVowels as $key => $letter){
+    switch ($letter) {
+        case 'a' :
+            unset($takeMeVowels[$key]);
+            break;
+        case 'e' :
+            unset($takeMeVowels[$key]);
+            break;
+        case 'i' :
+            unset($takeMeVowels[$key]);
+            break;
+        case 'o' :
+            unset($takeMeVowels[$key]);
+            break;
+        case 'u' :
+            unset($takeMeVowels[$key]);
+            break;
+        case 'y' :
+            unset($takeMeVowels[$key]);
+            break;
+    }
+
 }
 var_dump($takeMeVowels);
 

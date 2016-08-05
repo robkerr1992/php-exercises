@@ -8,8 +8,8 @@ if ($argc >= 3){
 	$max = $argv[2];
 	} else {
 		fwrite(STDERR, 'You need to use numbers, fool.');
-	}
-}
+	};
+};
 
 $attempts = 0;
 $random = mt_rand($min, $max);
